@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">AndroidSync</string>
+    <string name="start_button">Start</string>
+    <string name="message_ready">準備中</string>
+    <string name="message_movie1">動画①</string>
+    <string name="message_movie2">動画②</string>
+    <string name="message_movie3">動画③</string>
 </resources>
