@@ -1,18 +1,18 @@
 package com.example.kazukihayashi.androidsync;
 
-import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 import com.instacart.library.truetime.TrueTimeRx;
 
-import java.util.ArrayList;
+import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -21,11 +21,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class MovieActivity extends AppCompatActivity {
 
-    private static final int START_HOUR = 19;
-    private static final int START_MINUTE_1 = 10;
-    private static final int START_MINUTE_2 = START_MINUTE_1 + 1;
-    private static final int START_MINUTE_3 = START_MINUTE_2 + 1;
-
+    private ConstraintLayout mConstraintLayout;
     private TextView mTextView;
     private CompositeDisposable mDisposable;
 
@@ -35,11 +31,12 @@ public class MovieActivity extends AppCompatActivity {
         setContentView(R.layout.activity_movie);
 
         mTextView = findViewById(R.id.message_string);
+        mConstraintLayout = findViewById(R.id.background);
 
-        Map<Calendar, String> calendars = new HashMap<>();
-        calendars.put(getCalender(START_HOUR, START_MINUTE_1), getString(R.string.message_movie1));
-        calendars.put(getCalender(START_HOUR, START_MINUTE_2), getString(R.string.message_movie2));
-        calendars.put(getCalender(START_HOUR, START_MINUTE_3), getString(R.string.message_movie3));
+        Map<Calendar, MovieModel> movies = new HashMap<>();
+        movies.put(getCalender(getResources().getInteger(R.integer.start_hour), getResources().getInteger(R.integer.start_minute)), new MovieModel(1, getString(R.string.message_movie1), Color.BLUE));
+        movies.put(getCalender(getResources().getInteger(R.integer.start_hour), getResources().getInteger(R.integer.start_minute) + 1), new MovieModel(1, getString(R.string.message_movie2), Color.RED));
+        movies.put(getCalender(getResources().getInteger(R.integer.start_hour), getResources().getInteger(R.integer.start_minute) + 2), new MovieModel(1, getString(R.string.message_movie3), Color.GREEN));
 
         mDisposable = new CompositeDisposable();
         mDisposable.add(
@@ -48,10 +45,11 @@ public class MovieActivity extends AppCompatActivity {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(date -> {
-                            for (Map.Entry<Calendar, String> calendar : calendars.entrySet()) {
+                            for (Map.Entry<Calendar, MovieModel> movie : movies.entrySet()) {
                                 new Handler().postDelayed(() -> {
-                                    mTextView.setText(calendar.getValue());
-                                }, calendar.getKey().getTimeInMillis() - date.getTime());
+                                    mConstraintLayout.setBackgroundColor(movie.getValue().getBgColor());
+                                    mTextView.setText(MessageFormat.format("{0}: {1}分間", movie.getValue().getMessage(), movie.getValue().getLength()));
+                                }, movie.getKey().getTimeInMillis() - date.getTime());
                             }
                                 }
                         )
