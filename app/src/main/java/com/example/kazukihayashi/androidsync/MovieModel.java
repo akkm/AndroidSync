@@ -1,7 +1,5 @@
 package com.example.kazukihayashi.androidsync;
 
-import android.graphics.Color;
-
 public class MovieModel {
 
     private int mLength;
